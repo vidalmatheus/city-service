@@ -1,0 +1,10 @@
+fastapi
+pip-tools
+invoke
+black
+isort
+pytest
+uvicorn[standard]
+sqlalchemy
+alembic
+requests

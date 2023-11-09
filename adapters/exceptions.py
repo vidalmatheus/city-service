@@ -1,0 +1,2 @@
+class IbgeConnectionError(Exception):
+    pass
