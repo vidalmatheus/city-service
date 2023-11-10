@@ -1,6 +1,10 @@
-from fastapi import FastAPI
+from typing import List
 
-from services import ibge_svc
+from fastapi import Depends, FastAPI
+
+from database.session import Session, get_db_session
+from schemas.response_schemas import FetchCitySchema, GetCitySchema
+from services import city_svc
 
 app = FastAPI()
 
@@ -13,18 +17,33 @@ async def status():
     return {"status": "ok"}
 
 
-@app.get("/city/external-fetching")
+@app.get("/city/external-fetching", response_model=List[FetchCitySchema])
 async def fetch_cities():
     """
     This route is used for fetching all existing cities in Brazil through IBGE's API
     """
-    resp = ibge_svc.get_cities()
-    return resp
+    return city_svc.fetch_cities()
 
 
-@app.get("/city")
-async def list_cities():
+@app.get("/city/external-fetching/save", response_model=List[GetCitySchema])
+async def fetch_cities_and_save(db: Session = Depends(get_db_session)):
     """
-    This route is used to list available cities
+    This route is used for fetching all existing cities in Brazil through IBGE's API and saving them on database
     """
-    return {}
+    return await city_svc.fetch_and_save_cities(db)
+
+
+@app.get("/city", response_model=List[GetCitySchema])
+async def list_cities(db: Session = Depends(get_db_session)):
+    """
+    This route is used to list persisted cities
+    """
+    return await city_svc.get_cities(db)
+
+
+@app.get("/city/{id}", response_model=GetCitySchema)
+async def list_cities(id: int, db: Session = Depends(get_db_session)):
+    """
+    This route is used to list persisted cities
+    """
+    return await city_svc.get_city_by_id(db, id)
