@@ -35,7 +35,9 @@ async def fetch_cities_and_save(db: AsyncSession = Depends(get_db_session)):
 
 
 @app.get("/city", response_model=List[GetCitySchema])
-async def list_cities(ids: str = None, name: str = None, state_abbreviation: str = None, db: AsyncSession = Depends(get_db_session)):
+async def list_cities(
+    ids: str = None, name: str = None, state_abbreviation: str = None, db: AsyncSession = Depends(get_db_session)
+):
     """
     This route is used to list persisted cities
     """
