@@ -5,6 +5,8 @@ black
 isort
 pytest
 uvicorn[standard]
-sqlalchemy
+sqlalchemy[asyncio]
+aiosqlite
+SQLAlchemy-serializer
 alembic
 requests
