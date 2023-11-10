@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import Base
@@ -26,10 +26,20 @@ class SqlRepository:
         await self.db.refresh(obj)
         return obj
 
-    async def save_bulk(self, data_list: List[dict]) -> List[Base]:
+    async def bulk_create(self, data_list: List[dict]) -> List[Base]:
+        if not data_list:
+            return []
         objs = await self.db.scalars(insert(self.model).returning(self.model), data_list)
         await self.db.commit()
         objs_list = objs.all()
         for obj in objs_list:
             await self.db.refresh(obj)
         return objs_list
+
+    async def bulk_update(self, data_list: List[dict]) -> List[Base]:
+        if not data_list:
+            return []
+        # Dialect sqlite+aiosqlite with current server capabilities does not support UPDATE..RETURNING when executemany is used
+        await self.db.execute(update(self.model), data_list)
+        await self.db.commit()
+        return data_list

@@ -4,7 +4,7 @@ from fastapi import Depends, FastAPI
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.session import get_db_session
-from schemas.response_schemas import FetchCitySchema, GetCitySchema
+from schemas.response_schemas import FetchCitySchema, GetCitySchema, FetchSaveCitySchema
 from services import city_svc
 
 app = FastAPI()
@@ -26,12 +26,17 @@ async def fetch_cities():
     return city_svc.fetch_cities()
 
 
-@app.get("/city/external-fetching/save", response_model=List[GetCitySchema])
+@app.get("/city/external-fetching/save", response_model=FetchSaveCitySchema)
 async def fetch_cities_and_save(db: AsyncSession = Depends(get_db_session)):
     """
     This route is used for fetching all existing cities in Brazil through IBGE's API and saving them on database
     """
-    return await city_svc.fetch_and_save_cities(db)
+    created, updated = await city_svc.fetch_and_save_cities(db)
+    return {
+        "message": "Fetch completed",
+        "created": created,
+        "updated": updated
+    }
 
 
 @app.get("/city", response_model=List[GetCitySchema])

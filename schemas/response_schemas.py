@@ -15,3 +15,9 @@ class GetCitySchema(BaseModel):
     state_abbreviation: str
     created: datetime
     updated: Optional[datetime]
+
+
+class FetchSaveCitySchema(BaseModel):
+    message: str
+    created: int
+    updated: int

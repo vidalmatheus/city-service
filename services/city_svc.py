@@ -14,8 +14,7 @@ def fetch_cities():
 async def fetch_and_save_cities(db: AsyncSession):
     cities_list = fetch_cities()
     city_repo = CityRepository(db)
-    cities_list_db = await city_repo.save_bulk(cities_list)
-    return cities_list_db
+    return await city_repo.bulk_create_or_update(cities_list)
 
 
 async def get_cities(db: AsyncSession, ids: List[int] = None, name: str = None, state_abbreviation: str = None):
