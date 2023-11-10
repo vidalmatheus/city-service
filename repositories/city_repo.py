@@ -6,6 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database.models import City
 from repositories.sql_repo import SqlRepository
 
+MAX_RECORDS = 100
+
 
 class CityRepository(SqlRepository):
     def __init__(self, db: AsyncSession) -> None:
@@ -23,5 +25,5 @@ class CityRepository(SqlRepository):
         if state_abbreviation:
             filters.append(City.state_abbreviation.istartswith(state_abbreviation))
 
-        objs = await self.db.execute(select(self.model).where(and_(*filters)))
+        objs = await self.db.execute(select(self.model).where(and_(*filters)).limit(MAX_RECORDS))
         return objs.scalars().all()

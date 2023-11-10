@@ -39,7 +39,7 @@ async def list_cities(
     ids: str = None, name: str = None, state_abbreviation: str = None, db: AsyncSession = Depends(get_db_session)
 ):
     """
-    This route is used to list persisted cities
+    This route is used to list persisted cities. At most 100 records
     """
     if ids:
         ids = ids.split(",")
