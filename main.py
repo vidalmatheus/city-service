@@ -1,8 +1,9 @@
 from typing import List
 
 from fastapi import Depends, FastAPI
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.session import Session, get_db_session
+from database.session import get_db_session
 from schemas.response_schemas import FetchCitySchema, GetCitySchema
 from services import city_svc
 
@@ -26,7 +27,7 @@ async def fetch_cities():
 
 
 @app.get("/city/external-fetching/save", response_model=List[GetCitySchema])
-async def fetch_cities_and_save(db: Session = Depends(get_db_session)):
+async def fetch_cities_and_save(db: AsyncSession = Depends(get_db_session)):
     """
     This route is used for fetching all existing cities in Brazil through IBGE's API and saving them on database
     """
@@ -34,7 +35,7 @@ async def fetch_cities_and_save(db: Session = Depends(get_db_session)):
 
 
 @app.get("/city", response_model=List[GetCitySchema])
-async def list_cities(db: Session = Depends(get_db_session)):
+async def list_cities(db: AsyncSession = Depends(get_db_session)):
     """
     This route is used to list persisted cities
     """
@@ -42,7 +43,7 @@ async def list_cities(db: Session = Depends(get_db_session)):
 
 
 @app.get("/city/{id}", response_model=GetCitySchema)
-async def list_cities(id: int, db: Session = Depends(get_db_session)):
+async def list_cities(id: int, db: AsyncSession = Depends(get_db_session)):
     """
     This route is used to list persisted cities
     """

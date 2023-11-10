@@ -1,13 +1,13 @@
 from typing import List
 
 from sqlalchemy import insert, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import Base
-from database.session import Session
 
 
 class SqlRepository:
-    def __init__(self, db: Session, model: Base) -> None:
+    def __init__(self, db: AsyncSession, model: Base) -> None:
         self.db = db
         self.model = model
 
