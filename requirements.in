@@ -13,5 +13,6 @@ requests
 pytest
 pytest-cov
 pytest-mock
+pytest-asyncio
 model-bakery
 httpx
