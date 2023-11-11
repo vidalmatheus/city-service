@@ -26,7 +26,7 @@ class CityRepository(SqlRepository):
         if state_abbreviation:
             filters.append(City.state_abbreviation.istartswith(state_abbreviation))
 
-        objs = await self.db.execute(select(City).where(and_(*filters)).limit(MAX_RECORDS))
+        objs = await self.db.execute(select(City).where(and_(True, *filters)).limit(MAX_RECORDS))
         return objs.scalars().all()
 
     async def bulk_create_or_update(self, cities: List[dict]) -> List[City]:
