@@ -17,8 +17,8 @@ async def fetch_cities():
 
 @router.get("/external-fetching/save", response_model=FetchSaveCitySchema)
 async def fetch_cities_and_save(db: AsyncSession = Depends(get_db_session)):
-    created, updated = await city_svc.fetch_and_save_cities(db)
-    return {"message": "Fetching and saving completed", "created": created, "updated": updated}
+    created_qtd, updated_qtd = await city_svc.fetch_and_save_cities(db)
+    return {"message": "Fetching and saving completed", "created_qtd": created_qtd, "updated_qtd": updated_qtd}
 
 
 @router.get("", response_model=List[GetCitySchema])

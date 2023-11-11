@@ -19,5 +19,5 @@ class GetCitySchema(BaseModel):
 
 class FetchSaveCitySchema(BaseModel):
     message: str
-    created: int
-    updated: int
+    created_qtd: int
+    updated_qtd: int
