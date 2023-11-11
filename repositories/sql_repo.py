@@ -29,12 +29,9 @@ class SqlRepository:
     async def bulk_create(self, data_list: List[dict]) -> List[Base]:
         if not data_list:
             return []
-        objs = await self.db.scalars(insert(self.model).returning(self.model), data_list)
+        objs = await self.db.execute(insert(self.model).values(data_list).returning(self.model))
         await self.db.commit()
-        objs_list = objs.all()
-        for obj in objs_list:
-            await self.db.refresh(obj)
-        return objs_list
+        return objs.scalars().all()
 
     async def bulk_update(self, data_list: List[dict]) -> List[Base]:
         if not data_list:

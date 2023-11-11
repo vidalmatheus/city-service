@@ -1,36 +1,51 @@
-import pytest
+import pytest_asyncio
 from fastapi.testclient import TestClient
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import insert
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from database.models import Base, City
 from database.session import create_async_engine
 from main import app
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 def client():
     return TestClient(app)
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(scope="session")
 def db_url():
-    return "sqlite+aiosqlite:///./test.db"
+    return "sqlite+aiosqlite://"
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(scope="session")
 def engine(db_url):
-    return create_async_engine(db_url, echo=True)
+    return create_async_engine(db_url)
 
 
-@pytest.fixture(scope="session")
-async def tables(engine):
-    from database.models import Base
-
+@pytest_asyncio.fixture(autouse=True)
+async def db(engine):
     async with engine.begin() as connection:
+        await connection.run_sync(Base.metadata.drop_all)
         await connection.run_sync(Base.metadata.create_all)
-
-
-@pytest.fixture(autouse=True)
-async def db(tables, engine):
-    await tables
-    async with AsyncSession(engine) as session:
+    Session = async_sessionmaker(engine)
+    session = Session()
+    try:
         yield session
+    finally:
+        await session.close()
+
+
+@pytest_asyncio.fixture
+async def cities(db: AsyncSession):
+    res = await db.execute(
+        insert(City)
+        .values(
+            [
+                {"name": "Rio de Janeiro", "state_abbreviation": "RJ"},
+                {"name": "São Paulo", "state_abbreviation": "SP"},
+            ]
+        )
+        .returning(City)
+    )
+    return res.scalars().all()

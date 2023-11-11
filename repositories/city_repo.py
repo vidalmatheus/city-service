@@ -32,6 +32,7 @@ class CityRepository(SqlRepository):
     async def bulk_create_or_update(self, cities: List[dict]) -> List[City]:
         to_be_updated_objects = []
         to_be_created_objects = []
+        now = datetime.utcnow()
         for city in cities:
             existing_city_query_result = await self.db.execute(
                 select(City).where(
@@ -42,7 +43,7 @@ class CityRepository(SqlRepository):
             if existing_city:
                 existing_city_dict = existing_city.to_dict()
                 existing_city_dict.pop("created")
-                existing_city_dict["updated"] = datetime.utcnow()
+                existing_city_dict["updated"] = now
                 to_be_updated_objects.append(existing_city_dict)
             else:
                 to_be_created_objects.append(city)
