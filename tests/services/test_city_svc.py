@@ -30,11 +30,7 @@ async def test_fetch_and_save_cities(mocker, db):
 @pytest.mark.asyncio
 async def test_get_cities(mocker, db):
     mock_get = mocker.patch.object(CityRepository, "get", return_value=[])
-    params = {
-        "ids": [1,2],
-        "name": "Rio",
-        "state_abbreviation": "RJ"
-    }
+    params = {"ids": [1, 2], "name": "Rio", "state_abbreviation": "RJ"}
     await city_svc.get_cities(db, **params)
     assert await mock_get.called_once_with(**params)
 
