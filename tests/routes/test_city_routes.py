@@ -1,6 +1,8 @@
 import json
 from datetime import datetime, timedelta
+
 from fastapi.testclient import TestClient
+
 
 def test_fetch_cities(client, mocker):
     mock_cities = [
@@ -63,15 +65,10 @@ def test_list_cities_params(client: TestClient, mocker):
         }
     ]
     mocker.patch("services.city_svc.get_cities", return_value=mock_cities)
-    resp = client.get("/city", params={
-        "ids": "1,2",
-        "name": "Rio",
-        "state_abbreviation": "RJ"
-	})
+    resp = client.get("/city", params={"ids": "1,2", "name": "Rio", "state_abbreviation": "RJ"})
     assert resp.status_code == 200
     json_resp = json.loads(resp.content)
     assert json_resp[0]["name"] == mock_cities[0]["name"]
-    
 
 
 def test_get_city_by_id(client, mocker):
