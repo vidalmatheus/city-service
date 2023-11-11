@@ -9,7 +9,7 @@ class BaseRequest:
         self.session = self._build_session()
 
     def _build_session(self):
-        raise NotImplementedError("_build_session not yet implemented")
+        raise NotImplementedError("_build_session method not yet implemented")
 
     def send(self, params: dict = None, json: dict = None, data: dict = None):
         raise NotImplementedError("send method not yet implemented")

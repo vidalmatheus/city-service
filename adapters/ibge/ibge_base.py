@@ -47,9 +47,9 @@ class IbgeBaseRequest(BaseRequest):
                 data=data,
                 verify=True,
             )
-        except ConnectionError:
+        except ConnectionError as exc:
             error_msg = f"IBGE {self.method} {url} with {params=} {json=} {data=} connection error"
-            raise IbgeConnectionError(error_msg)
+            raise IbgeConnectionError(error_msg) from exc
 
         response.raise_for_status()
 

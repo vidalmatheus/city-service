@@ -14,5 +14,5 @@ pytest
 pytest-cov
 pytest-mock
 pytest-asyncio
-model-bakery
+requests-mock
 httpx
