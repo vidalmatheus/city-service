@@ -39,6 +39,14 @@ async def test_bulk_create(db):
 
 
 @pytest.mark.asyncio
+async def test_bulk_create_no_data(db):
+    repository = SqlRepository(db, City)
+    data_list = []
+    result = await repository.bulk_create(data_list)
+    assert len(result) == 0
+
+
+@pytest.mark.asyncio
 async def test_bulk_update(db, cities):
     repository = SqlRepository(db, City)
     city_id_1 = cities[0].id
@@ -49,3 +57,11 @@ async def test_bulk_update(db, cities):
     city_2 = await repository.get_by_id(city_id_2)
     assert city_1.name == "UpdatedTest1"
     assert city_2.name == "UpdatedTest2"
+
+
+@pytest.mark.asyncio
+async def test_bulk_update_no_data(db):
+    repository = SqlRepository(db, City)
+    data_list = []
+    result = await repository.bulk_update(data_list)
+    assert len(result) == 0
