@@ -25,6 +25,15 @@ async def test_save(db):
     data = {"name": "Rio de Janeiro", "state_abbreviation": "RJ"}
     result = await repository.save(data)
     assert result.name == "Rio de Janeiro"
+    assert str(result)
+
+
+@pytest.mark.asyncio
+async def test_save_invalid_state_abbreviation(db):
+    repository = SqlRepository(db, City)
+    data = {"name": "Rio de Janeiro", "state_abbreviation": "R"}
+    with pytest.raises(ValueError, match="State abbreviation must be a two-letter uppercase string"):
+        await repository.save(data)
 
 
 @pytest.mark.asyncio
