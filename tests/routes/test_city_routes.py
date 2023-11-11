@@ -15,16 +15,16 @@ def test_fetch_cities(client, mocker):
 
 
 def test_fetch_cities_and_save(client, mocker):
-    created = 1
-    updated = 2
-    mock_fetch_and_save_cities = created, updated
+    created_qty = 1
+    updated_qty = 2
+    mock_fetch_and_save_cities = created_qty, updated_qty
     mocker.patch("services.city_svc.fetch_and_save_cities", return_value=mock_fetch_and_save_cities)
     resp = client.get("/city/external-fetching/save")
     assert resp.status_code == 200
     json_resp = json.loads(resp.content)
     assert json_resp["message"] == "Fetching and saving completed"
-    assert json_resp["created"] == created
-    assert json_resp["updated"] == updated
+    assert json_resp["created_qty"] == created_qty
+    assert json_resp["updated_qty"] == updated_qty
 
 
 def test_list_cities(client, mocker):
