@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from adapters.ibge.ibge_api import IbgeAPI
-from repositories.city_repo import CityRepository, SqlRepository
+from repositories.city_repo import CityRepository
 
 
 def fetch_cities():

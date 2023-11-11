@@ -10,3 +10,8 @@ aiosqlite
 SQLAlchemy-serializer
 alembic
 requests
+pytest
+pytest-cov
+pytest-mock
+model-bakery
+httpx

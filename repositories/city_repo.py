@@ -1,5 +1,5 @@
-from typing import List
 from datetime import datetime
+from typing import List
 
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -33,12 +33,11 @@ class CityRepository(SqlRepository):
         to_be_updated_objects = []
         to_be_created_objects = []
         for city in cities:
-            existing_city_query_result = await self.db.execute(select(City).where(
-                and_(
-                    City.name == city["name"],
-                    City.state_abbreviation == city["state_abbreviation"]
+            existing_city_query_result = await self.db.execute(
+                select(City).where(
+                    and_(City.name == city["name"], City.state_abbreviation == city["state_abbreviation"])
                 )
-            ))
+            )
             existing_city = existing_city_query_result.scalar()
             if existing_city:
                 existing_city_dict = existing_city.to_dict()
@@ -51,5 +50,3 @@ class CityRepository(SqlRepository):
         created_objs = await self.bulk_create(to_be_created_objects)
         updated_objs = await self.bulk_update(to_be_updated_objects)
         return len(created_objs), len(updated_objs)
-
-        

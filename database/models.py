@@ -2,8 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Mapped, mapped_column, validates
+from sqlalchemy.orm import Mapped, declarative_base, mapped_column, validates
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy_serializer import SerializerMixin
 
