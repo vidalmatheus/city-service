@@ -3,6 +3,7 @@ pip-tools
 invoke
 black
 isort
+autoflake
 pytest
 uvicorn[standard]
 sqlalchemy[asyncio]

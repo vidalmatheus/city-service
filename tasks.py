@@ -47,6 +47,7 @@ def lint(c):
 
 @projtask
 def format(c):
+    c.run("autoflake --remove-all-unused-imports --in-place -r .")
     c.run("isort --profile black --line-length 120 .")
     c.run("black --line-length 120 .")
 

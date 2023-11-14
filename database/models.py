@@ -1,12 +1,10 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import String, event
-from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, declarative_base, mapped_column, validates
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy_serializer import SerializerMixin
-from unidecode import unidecode
 
 Base = declarative_base()
 
