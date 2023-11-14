@@ -1,4 +1,3 @@
-from utils import str_utils
 from datetime import datetime
 from typing import List
 
@@ -7,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import City
 from repositories.sql_repo import SqlRepository
+from utils import str_utils
 
 MAX_RECORDS = 100
 
@@ -35,7 +35,9 @@ class CityRepository(SqlRepository):
         if state_abbreviation:
             filters.append(City.state_abbreviation.istartswith(state_abbreviation))
 
-        objs = await self.db.execute(select(City).where(and_(True, *filters)).limit(MAX_RECORDS).order_by(City.normalized_name))
+        objs = await self.db.execute(
+            select(City).where(and_(True, *filters)).limit(MAX_RECORDS).order_by(City.normalized_name)
+        )
         return objs.scalars().all()
 
     async def get_by_id(self, id: int) -> City:

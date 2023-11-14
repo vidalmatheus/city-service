@@ -2,9 +2,9 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import String, event
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, declarative_base, mapped_column, validates
 from sqlalchemy.schema import UniqueConstraint
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_serializer import SerializerMixin
 from unidecode import unidecode
 
