@@ -25,8 +25,10 @@ async def test_get_by_name(db):
     )
     result_1 = await repository.get(name="sao")
     result_2 = await repository.get(name="paulo")
+    result_3 = await repository.get(name="são")
     assert len(result_1) == 1
     assert len(result_2) == 2
+    assert len(result_3) == 1
 
 
 @pytest.mark.asyncio

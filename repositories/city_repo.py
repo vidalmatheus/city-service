@@ -30,7 +30,7 @@ class CityRepository(SqlRepository):
             filters.append(City.id.in_(ids))
 
         if name:
-            filters.append(City.normalized_name.icontains(name))
+            filters.append(City.normalized_name.icontains(str_utils.only_ascii(name)))
 
         if state_abbreviation:
             filters.append(City.state_abbreviation.istartswith(state_abbreviation))
