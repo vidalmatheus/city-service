@@ -54,10 +54,10 @@ def format(c):
 
 @projtask
 def dkbuild(c):
-    c.run("docker build -t typeahead .")
+    c.run("docker build -t city-service .")
 
 
 @projtask
 def dkrun(c):
-    c.run("docker rm typeahead")
-    c.run("docker run -p 8000:8000 --name typeahead typeahead")
+    c.run("docker rm city-service")
+    c.run("docker run -p 8000:8000 --name city-service city-service")
