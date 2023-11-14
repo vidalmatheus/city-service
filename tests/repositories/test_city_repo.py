@@ -23,8 +23,28 @@ async def test_get_by_name(db):
     await repository.bulk_create(
         [{"name": "Monsenhor Paulo", "state_abbreviation": "MG"}, {"name": "São Paulo", "state_abbreviation": "SP"}]
     )
-    result = await repository.get(name="paulo")
-    assert len(result) == 2
+    result_1 = await repository.get(name="sao")
+    result_2 = await repository.get(name="paulo")
+    assert len(result_1) == 1
+    assert len(result_2) == 2
+
+
+@pytest.mark.asyncio
+async def test_get_by_id(db, cities):
+    repository = CityRepository(db)
+    city_id = 1
+    result = await repository.get_by_id(city_id)
+    assert result.id == city_id
+
+
+@pytest.mark.asyncio
+async def test_save(db):
+    repository = CityRepository(db)
+    data = {"name": "São Paulo", "normalized_name": "Sao Paulo", "state_abbreviation": "SP"}
+    result = await repository.save(data)
+    assert result.name == "São Paulo"
+    assert result.normalized_name == "Sao Paulo"
+    assert str(result)
 
 
 @pytest.mark.asyncio

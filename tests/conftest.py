@@ -42,8 +42,8 @@ async def cities(db: AsyncSession):
         insert(City)
         .values(
             [
-                {"name": "Rio de Janeiro", "state_abbreviation": "RJ"},
-                {"name": "São Paulo", "state_abbreviation": "SP"},
+                {"name": "Rio de Janeiro", "normalized_name": "Rio de Janeiro", "state_abbreviation": "RJ"},
+                {"name": "São Paulo", "normalized_name": "Sao Paulo", "state_abbreviation": "SP"},
             ]
         )
         .returning(City)

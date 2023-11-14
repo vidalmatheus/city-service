@@ -1,10 +1,12 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import String
+from sqlalchemy import String, event
 from sqlalchemy.orm import Mapped, declarative_base, mapped_column, validates
 from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_serializer import SerializerMixin
+from unidecode import unidecode
 
 Base = declarative_base()
 
@@ -13,8 +15,9 @@ class City(Base, SerializerMixin):
     __tablename__ = "city"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    name: Mapped[str] = mapped_column(String(120), nullable=False)
-    state_abbreviation: Mapped[str] = mapped_column(String(2), nullable=False)
+    name: Mapped[str] = mapped_column(String(120))
+    normalized_name: Mapped[str] = mapped_column(String(120))
+    state_abbreviation: Mapped[str] = mapped_column(String(2))
 
     created: Mapped[datetime] = mapped_column(default=datetime.utcnow)
     updated: Mapped[Optional[datetime]] = mapped_column(onupdate=datetime.utcnow)

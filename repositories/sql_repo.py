@@ -1,5 +1,6 @@
 from typing import List
 
+from sqlalchemy import event
 from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 

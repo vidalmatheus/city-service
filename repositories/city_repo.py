@@ -1,7 +1,8 @@
+from utils import str_utils
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import and_, select
+from sqlalchemy import and_, select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import City
@@ -14,6 +15,14 @@ class CityRepository(SqlRepository):
     def __init__(self, db: AsyncSession) -> None:
         super().__init__(db, City)
 
+    def _add_normalized_name(self, city: dict = None, cities: List[dict] = None):
+        if city:
+            city["normalized_name"] = str_utils.only_ascii(city["name"])
+            return city
+        for city in cities:
+            city["normalized_name"] = str_utils.only_ascii(city["name"])
+        return cities
+
     async def get(self, ids: List[int] = None, name: str = None, state_abbreviation: str = None) -> List[City]:
         filters = []
 
@@ -21,25 +30,44 @@ class CityRepository(SqlRepository):
             filters.append(City.id.in_(ids))
 
         if name:
-            filters.append(City.name.icontains(name))
+            filters.append(City.normalized_name.icontains(name))
 
         if state_abbreviation:
             filters.append(City.state_abbreviation.istartswith(state_abbreviation))
 
-        objs = await self.db.execute(select(City).where(and_(True, *filters)).limit(MAX_RECORDS))
+        objs = await self.db.execute(select(City).where(and_(True, *filters)).limit(MAX_RECORDS).order_by(City.normalized_name))
         return objs.scalars().all()
+
+    async def get_by_id(self, id: int) -> City:
+        return await super().get_by_id(id)
+
+    async def save(self, city: dict) -> City:
+        self._add_normalized_name(city)
+        return await super().save(city)
+
+    async def bulk_create(self, cities: List[dict]) -> List[City]:
+        self._add_normalized_name(cities=cities)
+        return await super().bulk_create(cities)
+
+    async def bulk_update(self, data_list: List[dict]) -> List[City]:
+        return await super().bulk_update(data_list)
 
     async def bulk_create_or_update(self, cities: List[dict]) -> List[City]:
         to_be_updated_objects = []
         to_be_created_objects = []
         now = datetime.utcnow()
-        for city in cities:
-            existing_city_query_result = await self.db.execute(
-                select(City).where(
-                    and_(City.name == city["name"], City.state_abbreviation == city["state_abbreviation"])
+        existing_cities = await self.db.execute(
+            select(City).filter(
+                tuple_(City.name, City.state_abbreviation).in_(
+                    ((city["name"], city["state_abbreviation"]) for city in cities)
                 )
             )
-            existing_city = existing_city_query_result.scalar()
+        )
+        existing_cities = existing_cities.scalars().all()
+        existing_cities_map = {(city.name, city.state_abbreviation): city for city in existing_cities}
+
+        for city in cities:
+            existing_city = existing_cities_map.get((city["name"], city["state_abbreviation"]))
             if existing_city:
                 existing_city_dict = existing_city.to_dict()
                 existing_city_dict.pop("created")

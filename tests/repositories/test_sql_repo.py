@@ -22,16 +22,17 @@ async def test_get_by_id(db, cities):
 @pytest.mark.asyncio
 async def test_save(db):
     repository = SqlRepository(db, City)
-    data = {"name": "Rio de Janeiro", "state_abbreviation": "RJ"}
+    data = {"name": "São Paulo", "normalized_name": "Sao Paulo", "state_abbreviation": "SP"}
     result = await repository.save(data)
-    assert result.name == "Rio de Janeiro"
+    assert result.name == "São Paulo"
+    assert result.normalized_name == "Sao Paulo"
     assert str(result)
 
 
 @pytest.mark.asyncio
 async def test_save_invalid_state_abbreviation(db):
     repository = SqlRepository(db, City)
-    data = {"name": "Rio de Janeiro", "state_abbreviation": "R"}
+    data = {"name": "Rio de Janeiro", "normalized_name": "Rio de Janeiro", "state_abbreviation": "R"}
     with pytest.raises(ValueError, match="State abbreviation must be a two-letter uppercase string"):
         await repository.save(data)
 
@@ -40,8 +41,8 @@ async def test_save_invalid_state_abbreviation(db):
 async def test_bulk_create(db):
     repository = SqlRepository(db, City)
     data_list = [
-        {"name": "Rio de Janeiro", "state_abbreviation": "RJ"},
-        {"name": "São Paulo", "state_abbreviation": "SP"},
+        {"name": "Rio de Janeiro", "normalized_name": "Rio de Janeiro", "state_abbreviation": "RJ"},
+        {"name": "São Paulo", "normalized_name": "Sao Paulo", "state_abbreviation": "SP"},
     ]
     result = await repository.bulk_create(data_list)
     assert len(result) == 2
