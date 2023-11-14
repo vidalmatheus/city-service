@@ -21,7 +21,7 @@ class CityRepository(SqlRepository):
             filters.append(City.id.in_(ids))
 
         if name:
-            filters.append(City.name.istartswith(name))
+            filters.append(City.name.icontains(name))
 
         if state_abbreviation:
             filters.append(City.state_abbreviation.istartswith(state_abbreviation))

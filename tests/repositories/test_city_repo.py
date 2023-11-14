@@ -18,6 +18,16 @@ async def test_get_params(db, cities):
 
 
 @pytest.mark.asyncio
+async def test_get_by_name(db):
+    repository = CityRepository(db)
+    await repository.bulk_create(
+        [{"name": "Monsenhor Paulo", "state_abbreviation": "MG"}, {"name": "São Paulo", "state_abbreviation": "SP"}]
+    )
+    result = await repository.get(name="paulo")
+    assert len(result) == 2
+
+
+@pytest.mark.asyncio
 async def test_bulk_create_or_update(db, cities):
     repository = CityRepository(db)
     created_qty, updated_qty = await repository.bulk_create_or_update(
