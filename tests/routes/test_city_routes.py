@@ -1,9 +1,10 @@
 import json
 from datetime import datetime, timedelta
 
-from database.models import City
 from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
+
+from database.models import City
 
 
 def test_fetch_cities(client: TestClient, mocker: MockerFixture):
