@@ -1,8 +1,8 @@
 """create_city_model
 
-Revision ID: f4e535c8e4f9
+Revision ID: 82d94d242a0c
 Revises: 
-Create Date: 2023-11-14 14:33:12.074870
+Create Date: 2023-11-15 01:52:23.082780
 
 """
 from typing import Sequence, Union
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "f4e535c8e4f9"
+revision: str = "82d94d242a0c"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,8 +25,8 @@ def upgrade() -> None:
         sa.Column("name", sa.String(length=120), nullable=False),
         sa.Column("normalized_name", sa.String(length=120), nullable=False),
         sa.Column("state_abbreviation", sa.String(length=2), nullable=False),
-        sa.Column("created", sa.DateTime(), nullable=False),
-        sa.Column("updated", sa.DateTime(), nullable=True),
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("name", "state_abbreviation", name="name_state_uc"),
     )

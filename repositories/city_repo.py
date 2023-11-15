@@ -4,7 +4,7 @@ from typing import List
 from sqlalchemy import and_, select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.models import City
+from database.models import City, CityLog
 from repositories.sql_repo import SqlRepository
 from utils import str_utils
 
@@ -13,7 +13,7 @@ MAX_RECORDS = 100
 
 class CityRepository(SqlRepository):
     def __init__(self, db: AsyncSession) -> None:
-        super().__init__(db, City)
+        super().__init__(db, City, CityLog)
 
     def _add_normalized_name(self, city: dict = None, cities: List[dict] = None):
         if city:
@@ -71,9 +71,8 @@ class CityRepository(SqlRepository):
         for city in cities:
             existing_city = existing_cities_map.get((city["name"], city["state_abbreviation"]))
             if existing_city:
-                existing_city_dict = existing_city.to_dict()
-                existing_city_dict.pop("created")
-                existing_city_dict["updated"] = now
+                existing_city_dict = existing_city.to_dict(only=("id", "name", "state_abbreviation", "updated_at"))
+                existing_city_dict["updated_at"] = now
                 to_be_updated_objects.append(existing_city_dict)
             else:
                 to_be_created_objects.append(city)

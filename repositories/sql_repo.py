@@ -1,15 +1,19 @@
 from typing import List
 
-from sqlalchemy import insert, select, update
+from sqlalchemy import and_, func, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from database.models import Base
 
+MAX_RECORDS = 100
+
 
 class SqlRepository:
-    def __init__(self, db: AsyncSession, model: Base) -> None:
+    def __init__(self, db: AsyncSession, model: Base, log_model: Base = None) -> None:
         self.db = db
         self.model = model
+        self.log_model = log_model
 
     async def get(self) -> List[Base]:
         objs = await self.db.execute(select(self.model))
@@ -40,3 +44,49 @@ class SqlRepository:
         await self.db.execute(update(self.model), data_list)
         await self.db.commit()
         return data_list
+
+    async def get_log(self, params: dict) -> List[Base]:
+        conditions = []
+        for key, value in params.items():
+            column = getattr(self.log_model, key, None)
+            if value:
+                if key == "ids":
+                    column = getattr(self.log_model, "id", None)
+                    conditions.append(column.in_(value))
+                elif key == "status":
+                    conditions.append(column.icontains(value))
+                else:
+                    conditions.append(column == value)
+
+        query = (
+            select(self.log_model)
+            .options(joinedload(self.log_model.city))
+            .where(and_(*conditions))
+            .order_by(self.log_model.created_at.desc())
+            .limit(MAX_RECORDS)
+        )
+
+        objs = await self.db.execute(query)
+        return objs.scalars().all()
+
+    async def get_most_recent_logs_by_status(self, status: str = None):
+        column_foreign_key = f"{self.model.__tablename__}_id"
+        group_by_column = getattr(self.log_model, column_foreign_key, None)
+        query = (
+            select(self.log_model, func.max(self.log_model.created_at).label("max_created_at"))
+            .group_by(group_by_column)
+            .options(joinedload(self.log_model.city))
+            .where(self.log_model.status.icontains(status))
+            .order_by(func.max(self.log_model.created_at).desc())
+            .limit(MAX_RECORDS)
+        )
+
+        objs = await self.db.execute(query)
+        return objs.scalars().all()
+
+    async def save_log(self, params) -> Base:
+        obj = self.log_model(**params)
+        self.db.add(obj)
+        await self.db.commit()
+        await self.db.refresh(obj, attribute_names=[self.model.__tablename__])
+        return obj

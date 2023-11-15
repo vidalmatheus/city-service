@@ -7,7 +7,7 @@ from routes import city_routes, status_routes
 app = FastAPI()
 
 
-app.add_middleware(CORSMiddleware, allow_origins=["*"])
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"])
 
 
 app.include_router(status_routes.router, prefix="/status")
