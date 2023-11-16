@@ -58,5 +58,7 @@ def dkbuild(c):
 
 
 @projtask
-def dkrun(c):
-    c.run("docker run -p 8000:8000 --network mynet --name city-service city-service")
+def dkrun(c, network=None):
+    if network:
+        c.run(f"docker run -p 8000:8000 --network {network} --name city-service city-service")    
+    c.run(f"docker run -p 8000:8000 --name city-service city-service")
