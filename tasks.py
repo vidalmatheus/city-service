@@ -59,5 +59,4 @@ def dkbuild(c):
 
 @projtask
 def dkrun(c):
-    c.run("docker rm city-service")
     c.run("docker run -p 8000:8000 --name city-service city-service")
