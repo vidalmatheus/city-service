@@ -40,9 +40,6 @@ class CityRepository(SqlRepository):
         )
         return objs.scalars().all()
 
-    async def get_by_id(self, id: int) -> City:
-        return await super().get_by_id(id)
-
     async def save(self, city: dict) -> City:
         self._add_normalized_name(city)
         return await super().save(city)
@@ -50,9 +47,6 @@ class CityRepository(SqlRepository):
     async def bulk_create(self, cities: List[dict]) -> List[City]:
         self._add_normalized_name(cities=cities)
         return await super().bulk_create(cities)
-
-    async def bulk_update(self, data_list: List[dict]) -> List[City]:
-        return await super().bulk_update(data_list)
 
     async def bulk_create_or_update(self, cities: List[dict]) -> List[City]:
         to_be_updated_objects = []

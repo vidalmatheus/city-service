@@ -1,6 +1,6 @@
 import pytest
 
-from database.models import City
+from database.models import City, CityLog, CityLogStatus
 from repositories.sql_repo import SqlRepository
 
 
@@ -75,3 +75,37 @@ async def test_bulk_update_no_data(db):
     data_list = []
     result = await repository.bulk_update(data_list)
     assert len(result) == 0
+
+
+@pytest.mark.asyncio
+async def test_get_log(db, cities_log):
+    repo = SqlRepository(db, City, CityLog)
+    result = await repo.get_log({"ids": [1, 2, 3], "city_id": 1, "status": CityLogStatus.CREATED})
+    assert len(result) == 1
+    assert result[0].status == CityLogStatus.CREATED
+    result_2 = await repo.get_log({"ids": None, "city_id": None, "status": None})
+    assert len(result_2) == 4
+    result_3 = await repo.get_log()
+    assert len(result_3) == 4
+
+
+@pytest.mark.asyncio
+async def test_get_most_recent_logs_by_status(db, cities_log):
+    repo = SqlRepository(db, City, CityLog)
+    result = await repo.get_most_recent_logs_by_status(CityLogStatus.CREATED)
+    assert len(result) == 2
+    result_2 = await repo.get_most_recent_logs_by_status(CityLogStatus.SELECTED)
+    assert len(result_2) == 2
+
+
+@pytest.mark.asyncio
+async def test_save_log(db, cities):
+    repo = SqlRepository(db, City, CityLog)
+    city = cities[0]
+    city_id = city.id
+    status = CityLogStatus.SELECTED
+    result: CityLog = await repo.save_log({"city_id": city_id, "status": status})
+    assert result.city == city
+    assert result.city_id == city_id
+    assert result.status == CityLogStatus.SELECTED
+    assert str(result)

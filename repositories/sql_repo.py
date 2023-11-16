@@ -45,18 +45,19 @@ class SqlRepository:
         await self.db.commit()
         return data_list
 
-    async def get_log(self, params: dict) -> List[Base]:
+    async def get_log(self, params: dict = None) -> List[Base]:
         conditions = []
-        for key, value in params.items():
-            column = getattr(self.log_model, key, None)
-            if value:
-                if key == "ids":
-                    column = getattr(self.log_model, "id", None)
-                    conditions.append(column.in_(value))
-                elif key == "status":
-                    conditions.append(column.icontains(value))
-                else:
-                    conditions.append(column == value)
+        if params is not None:
+            for key, value in params.items():
+                column = getattr(self.log_model, key, None)
+                if value:
+                    if key == "ids":
+                        column = getattr(self.log_model, "id", None)
+                        conditions.append(column.in_(value))
+                    elif key == "status":
+                        conditions.append(column.icontains(value))
+                    else:
+                        conditions.append(column == value)
 
         query = (
             select(self.log_model)
@@ -84,7 +85,7 @@ class SqlRepository:
         objs = await self.db.execute(query)
         return objs.scalars().all()
 
-    async def save_log(self, params) -> Base:
+    async def save_log(self, params: dict) -> Base:
         obj = self.log_model(**params)
         self.db.add(obj)
         await self.db.commit()

@@ -1,9 +1,11 @@
+from typing import List
+
 import pytest_asyncio
 from fastapi.testclient import TestClient
 from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
-from database.models import Base, City
+from database.models import Base, City, CityLog, CityLogStatus
 from database.session import create_async_engine
 from main import app
 
@@ -48,4 +50,14 @@ async def cities(db: AsyncSession):
         )
         .returning(City)
     )
+    return res.scalars().all()
+
+
+@pytest_asyncio.fixture
+async def cities_log(db: AsyncSession, cities: List[City]):
+    data_list = []
+    for city in cities:
+        data_list.append({"city_id": city.id, "status": CityLogStatus.CREATED})
+        data_list.append({"city_id": city.id, "status": CityLogStatus.SELECTED})
+    res = await db.execute(insert(CityLog).values(data_list).returning(CityLog))
     return res.scalars().all()

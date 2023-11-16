@@ -37,11 +37,6 @@ async def get_city_by_id(id: int, db: AsyncSession = Depends(get_db_session)):
     return await city_svc.get_city_by_id(db, id)
 
 
-@router.get("/most-recent-selected-cities", response_model=List[GetCitySchema])
-async def get_most_recent_selected_cities(db: AsyncSession = Depends(get_db_session)):
-    return await city_svc.get_most_recent_selected_cities(db, status=CityLogStatus.SELECTED)
-
-
 @router.post("/log", response_model=CityLogSchema)
 async def create_city_log(item: CreateLogSchema, db: AsyncSession = Depends(get_db_session)):
     return await city_svc.create_city_log(db, item.city_id, item.status)
@@ -54,3 +49,8 @@ async def get_city_log(
     if ids:
         ids = ids.split(",")
     return await city_svc.get_city_log(db, ids, city_id, status)
+
+
+@router.get("/log/most-recent-selected-cities", response_model=List[GetCitySchema])
+async def get_most_recent_selected_cities(db: AsyncSession = Depends(get_db_session)):
+    return await city_svc.get_most_recent_selected_cities(db, status=CityLogStatus.SELECTED)
