@@ -59,4 +59,4 @@ def dkbuild(c):
 
 @projtask
 def dkrun(c):
-    c.run("docker run -p 8000:8000 --name city-service city-service")
+    c.run("docker run -p 8000:8000 --network mynet --name city-service city-service")
