@@ -35,7 +35,7 @@
                     "curl -f http://localhost:8000/status || exit 1"
                 ],
                 "interval": 60,
-                "timeout": 5,
+                "timeout": 30,
                 "retries": 3
             }
         }
