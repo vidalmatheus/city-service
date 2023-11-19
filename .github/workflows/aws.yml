@@ -133,7 +133,7 @@ jobs:
         docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:prod
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:prod
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$prod" >> $GITHUB_OUTPUT
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:prod" >> $GITHUB_OUTPUT
 
     - name: Fill in the new image ID in the Amazon ECS task definition
       id: task-def
