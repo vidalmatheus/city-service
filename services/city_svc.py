@@ -42,7 +42,6 @@ async def get_city_log(db: AsyncSession, ids: List[int] = None, city_id: int = N
 
 async def get_most_recent_selected_cities(db: AsyncSession, status: CityLogStatus):
     repo = CityRepository(db)
-    logs = await repo.get_most_recent_logs_by_status(status)
-    last_10_logs = logs[:10]
+    last_10_logs = await repo.get_most_recent_logs_by_status(status=status, limit=10)
     most_recent_selected_cities = [log.city for log in last_10_logs]
     return most_recent_selected_cities

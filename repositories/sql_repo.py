@@ -45,7 +45,7 @@ class SqlRepository:
         await self.db.commit()
         return data_list
 
-    async def get_log(self, params: dict = None) -> List[Base]:
+    async def get_log(self, params: dict = None, limit: int = MAX_RECORDS) -> List[Base]:
         conditions = []
         if params is not None:
             for key, value in params.items():
@@ -64,13 +64,13 @@ class SqlRepository:
             .options(joinedload(self.log_model.city))
             .where(and_(*conditions))
             .order_by(self.log_model.created_at.desc())
-            .limit(MAX_RECORDS)
+            .limit(limit)
         )
 
         objs = await self.db.execute(query)
         return objs.scalars().all()
 
-    async def get_most_recent_logs_by_status(self, status: str = None):
+    async def get_most_recent_logs_by_status(self, status: str = None, limit: int = MAX_RECORDS):
         column_foreign_key = f"{self.model.__tablename__}_id"
         group_by_column = getattr(self.log_model, column_foreign_key, None)
         query = (
@@ -79,7 +79,7 @@ class SqlRepository:
             .options(joinedload(self.log_model.city))
             .where(self.log_model.status.icontains(status))
             .order_by(func.max(self.log_model.created_at).desc())
-            .limit(MAX_RECORDS)
+            .limit(limit)
         )
 
         objs = await self.db.execute(query)

@@ -79,4 +79,4 @@ async def test_get_most_recent_selected_cities(mocker, db):
     status = CityLogStatus.SELECTED
     result = await city_svc.get_most_recent_selected_cities(db, status)
     assert result == [city]
-    mock_get_most_recent_selected_cities.assert_awaited_once_with(status)
+    mock_get_most_recent_selected_cities.assert_awaited_once_with(status=status, limit=10)
