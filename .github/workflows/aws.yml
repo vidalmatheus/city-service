@@ -86,20 +86,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       
-      - name: Setup python version
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-      - run: python --version
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      
+      - name: Run the container from the builded image
+        id: run-container
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker run -d --name $IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "container=$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Run lint check
-        run: inv lint
+        env:
+          CONTAINER: ${{ steps.run-container.outputs.container }}
+        run: docker exec $CONTAINER inv lint
 
       - name: Run pytest with coverage
-        run: pytest --cov
+        env:
+          CONTAINER: ${{ steps.run-container.outputs.container }}
+        run: docker exec $CONTAINER pytest --cov
 
 
   deploy:
